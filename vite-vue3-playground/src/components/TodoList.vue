@@ -1,7 +1,7 @@
 <template>  
     <div>
         <h1 @click="add">{{count}}</h1>
-        <h2>Things to do: {{taskCount}}</h2>
+        <h2>Things to do: {{all}}</h2>
         <h3>Current score is {{score}}.</h3>
         <Rating v-model="score">
             <img width="14" src="../assets/logo.png">
@@ -9,10 +9,34 @@
         <Rating :value="4" theme="green"></Rating>
         <Rating :value="5" theme="blue"></Rating>
     </div>
+    <div>
+        <input type="text" v-model="title" @keydown.enter="addTodo" />
+        <button v-if="active < all" @click="clear">Clear</button>
+        <div v-if="todos.length">
+            <transition-group name="flip-list" tag="ul">
+                <li v-for="(todo,i) in todos" :key="todo.title">
+                <input type="checkbox" v-model="todo.done" />
+                <span :class="{ done: todo.done }">{{ todo.title }}</span>
+                <span class="remove-btn" @click="removeTodo($event, i)">❌</span>
+                </li>
+            </transition-group>
+        </div>
+        <div v-else>暂无数据</div>
+        <div>
+            全选
+            <input type="checkbox" v-model="allDone" />
+            <span>{{ active }} / {{ all }}</span>
+        </div>
+    </div>
+    <div class="info-wrapper" v-if="showModal">
+        <div class="info">
+            Bro, you have input nothing.
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { ref, computed} from 'vue';
+import { ref, computed, reactive} from 'vue';
 import { useTodos } from '../utils/todos';
 import Rating from './Rating.vue'
 let count = ref(1);
@@ -26,15 +50,58 @@ let score = ref(3.5);
 //     score.value = num;
 // }
 
-
+let title = ref("");
 let todoObj = useTodos();
-let taskCount = todoObj.all;
+let all = todoObj.all;
+let active = todoObj.active;
+let allDone = todoObj.allDone;
+let todos = todoObj.todos;
+let animate = reactive({
+  show: false,
+  el: null
+});
 
+function addTodo() {
+    if(!title.value) {
+        showModal.value = true;
+        setTimeout(() => {
+            showModal.value = false;
+        }, 1500);
+        return;
+    }
+    todos.value.push({
+        title: title.value,
+        done: false
+    });
+    title.value = "";
+}
+
+function removeTodo(e, i) {
+    animate.el = e.target;
+    animate.show = true;
+    todos.value.splice(i, 1);
+}
+
+function clear() {
+    todoObj.clear();
+}
+
+let showModal = ref(false);
 
 </script>
 
 <style scoped>
-    h1 {  
-        color: v-bind(color);
-    }
+h1 {  
+    color: v-bind(color);
+}
+.info-wrapper {
+    position: fixed;
+    top: 20px;
+    width: 200px;
+}
+.info {
+    padding: 20px;
+    color: white;
+    background: #d88986;
+}
 </style>

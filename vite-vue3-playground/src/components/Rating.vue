@@ -35,9 +35,9 @@ const fontStyle = computed(()=> {
     return `color:${themeObj[props.theme]};`;
 })
 
-let width = ref(props.value);
+let width = ref(props.modelValue);
 function onMouseout() {
-    width.value = props.value;
+    width.value = props.modelValue;
 }
 function onMouseover(v) {
     width.value = v;

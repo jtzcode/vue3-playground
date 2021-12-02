@@ -3,8 +3,8 @@ import useStorage from '../utils/storage';
 
 export function useTodos() {
     let title = ref("");
-    //let todos = ref([{title: "Learn Vue3", done: false}]);
-    let todos = useStorage('todos', '[]');
+    let todos = ref([{title: "Learn Vue3", done: false}]);
+    //let todos = useStorage('todos', '[]');
     
     function addTodo() {
         todos.value.push({
