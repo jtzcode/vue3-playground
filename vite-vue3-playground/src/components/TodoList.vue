@@ -9,15 +9,23 @@
         <Rating :value="4" theme="green"></Rating>
         <Rating :value="5" theme="blue"></Rating>
     </div>
+    <span class="dustbin">
+            🗑    
+    </span>
+    <div class="animate-wrap">    
+        <transition @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">        
+            <div class="animate" v-show="animate.show">            📋        </div>    
+        </transition>
+    </div>
     <div>
         <input type="text" v-model="title" @keydown.enter="addTodo" />
         <button v-if="active < all" @click="clear">Clear</button>
         <div v-if="todos.length">
             <transition-group name="flip-list" tag="ul">
                 <li v-for="(todo,i) in todos" :key="todo.title">
-                <input type="checkbox" v-model="todo.done" />
-                <span :class="{ done: todo.done }">{{ todo.title }}</span>
-                <span class="remove-btn" @click="removeTodo($event, i)">❌</span>
+                    <input type="checkbox" v-model="todo.done" />
+                    <span :class="{ done: todo.done }">{{ todo.title }}</span>
+                    <span class="remove-btn" @click="removeTodo($event, i)">❌</span>
                 </li>
             </transition-group>
         </div>
@@ -88,6 +96,25 @@ function clear() {
 
 let showModal = ref(false);
 
+function beforeEnter(el){      
+    let dom = animate.el      
+    let rect = dom.getBoundingClientRect()      
+    let x = window.innerWidth - rect.left - 60      
+    let y = rect.top - 10      
+    el.style.transform = `translate(-${x}px, ${y}px)`
+}
+
+function enter(el,done){      
+    document.body.offsetHeight      
+    el.style.transform = `translate(0,0)`      
+    el.addEventListener('transitionend', done)
+}
+
+function afterEnter(el){      
+    animate.show = false      
+    el.style.display = 'none'
+}
+
 </script>
 
 <style scoped>
@@ -103,5 +130,27 @@ h1 {
     padding: 20px;
     color: white;
     background: #d88986;
+}
+.flip-list-move {
+    transition: transform 0.8s ease;
+}
+.flip-list-enter-active,.flip-list-leave-active {  
+    transition: all 1s ease;
+}
+.flip-list-enter-from,.flip-list-leave-to {  
+    opacity: 0;  transform: translateX(30px);
+}
+.dustbin {
+  font-size: 20px;
+  position: fixed;
+  right: 10px;
+  top: 10px;
+}
+.animate-wrap .animate {
+  position: fixed;
+  right: 10px;
+  top: 11px;
+  z-index: 100;
+  transition: all 0.5s linear;
 }
 </style>
