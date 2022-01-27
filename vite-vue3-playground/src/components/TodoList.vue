@@ -117,7 +117,7 @@ function afterEnter(el){
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 h1 {  
     color: v-bind(color);
 }
@@ -152,5 +152,23 @@ h1 {
   top: 11px;
   z-index: 100;
   transition: all 0.5s linear;
+}
+
+$padding:10px;
+$white:#fff;
+ul {
+  width:500px;
+  margin:0 auto;
+  padding: 0;
+  li {
+    &:hover {
+      cursor: pointer;
+    }
+    list-style-type: none;
+    margin-bottom: $padding;
+    padding: $padding;
+    background: $white;
+    box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.1);
+  }
 }
 </style>
